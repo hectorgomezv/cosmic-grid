@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+
+# Outputs
+dist/
+coverage/
+
+# Environment files
+.env
+.env.docker
+
+# macOS
+.DS_Store
