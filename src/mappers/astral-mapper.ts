@@ -6,6 +6,10 @@ import {
   type AstralItem,
 } from '../entities/astral-item.js';
 
+/**
+ * Maps a given input string to a instance of a known
+ * {@link AstralItem} subclass, including its specific properties.
+ */
 export class AstralMapper {
   static map(input: string): AstralItem {
     switch (true) {

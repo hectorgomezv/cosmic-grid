@@ -1,16 +1,10 @@
 import type { AstralItem } from '../entities/astral-item.js';
 import type { Position } from '../entities/position.js';
+import { configuration } from '../config/configuration.js';
 
 export class CrossmintApiClient {
-  private apiUrl: string;
-  private candidateId: string;
-
-  constructor() {
-    this.apiUrl = process.env.API_URL ?? 'https://challenge.crossmint.com/api';
-    const candidateId = process.env.CANDIDATE_ID;
-    if (!candidateId) throw new Error('Invalid candidate ID');
-    this.candidateId = candidateId;
-  }
+  private readonly apiUrl = configuration.api.url;
+  private readonly candidateId = configuration.api.candidateId;
 
   async getGoal(): Promise<unknown> {
     const res = await fetch(`${this.apiUrl}/map/${this.candidateId}/goal`);
