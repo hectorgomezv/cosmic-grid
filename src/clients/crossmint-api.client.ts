@@ -3,31 +3,32 @@ import type { Position } from '../entities/position.js';
 
 export class CrossmintApiClient {
   private apiUrl: string;
+  private candidateId: string;
 
   constructor() {
     this.apiUrl = process.env.API_URL ?? 'https://challenge.crossmint.com/api';
+    const candidateId = process.env.CANDIDATE_ID;
+    if (!candidateId) throw new Error('Invalid candidate ID');
+    this.candidateId = candidateId;
   }
 
-  async getGoal(candidateId: string): Promise<unknown> {
-    const res = await fetch(`${this.apiUrl}/map/${candidateId}/goal`);
+  async getGoal(): Promise<unknown> {
+    const res = await fetch(`${this.apiUrl}/map/${this.candidateId}/goal`);
     if (!res.ok) throw new Error('Cannot retrieve goal');
     return res.json();
   }
 
-  async postAstralObject(args: {
-    candidateId: string;
-    item: AstralItem & Position;
-  }): Promise<void> {
+  async postAstralObject(item: AstralItem & Position): Promise<void> {
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
-    const url = `${this.apiUrl}/${this._getResourcePath(args.item)}`;
-    const { name, ...itemFields } = args.item;
+    const url = `${this.apiUrl}/${this._getResourcePath(item)}`;
+    const { name, ...itemFields } = item;
     await fetch(url, {
       method: 'POST',
       headers,
       body: JSON.stringify({
         ...itemFields,
-        candidateId: args.candidateId,
+        candidateId: this.candidateId,
       }),
     });
   }

@@ -13,8 +13,8 @@ export class GoalsRepository {
     this.apiClient = new CrossmintApiClient();
   }
 
-  async getGoal(candidateId: string): Promise<Goal> {
-    const res = await this.apiClient.getGoal(candidateId);
+  async getGoal(): Promise<Goal> {
+    const res = await this.apiClient.getGoal();
     const goal = this._parseGoalResponse(GoalResponseSchema.parse(res));
     return goal;
   }
