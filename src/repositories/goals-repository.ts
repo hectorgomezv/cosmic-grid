@@ -4,6 +4,7 @@ import {
   type Goal,
   type GoalResponse,
 } from '../entities/goal.js';
+import { logger } from '../common/logger.js';
 import { AstralMapper } from '../mappers/astral-mapper.js';
 
 export class GoalsRepository {
@@ -22,6 +23,7 @@ export class GoalsRepository {
   async getGoal(): Promise<Goal> {
     const res = await this.apiClient.getGoal();
     const goal = this._parseGoalResponse(GoalResponseSchema.parse(res));
+    logger.info(`Fetched goal with ${goal.length} items`);
     return goal;
   }
 
