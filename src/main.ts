@@ -19,4 +19,7 @@ const main = async () => {
   await astralRepository.draw(goal);
 };
 
-main();
+main().catch((err) => {
+  console.error('An error happened:', err);
+  process.exit(1);
+});
