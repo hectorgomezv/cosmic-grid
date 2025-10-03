@@ -13,12 +13,26 @@ export class GoalsRepository {
     this.apiClient = new CrossmintApiClient();
   }
 
+  /**
+   * Gets a Goal map of astral objects.
+   *
+   * @returns a flattened representation of a 2D array, holding both the
+   * astral object data and its position (row + column).
+   */
   async getGoal(): Promise<Goal> {
     const res = await this.apiClient.getGoal();
     const goal = this._parseGoalResponse(GoalResponseSchema.parse(res));
     return goal;
   }
 
+  /**
+   * Parses an unchecked Goal response payload coming from the API client.
+   *
+   * @param goalResponse unchecked payload representing a Goal map.
+   * @returns checked (validated) Goal map: a flattened representation
+   * of a 2D array, holding both the astral object data and its
+   * position (row + column).
+   */
   private _parseGoalResponse(goalResponse: GoalResponse): Goal {
     const { goal } = goalResponse;
     const result: Goal = [];
