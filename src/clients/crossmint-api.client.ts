@@ -27,7 +27,14 @@ export class CrossmintApiClient {
     });
   }
 
-  private _getResourcePath(item: AstralItem & Position) {
+  /**
+   * Given an astral object, computes its resource path
+   * to be concatenated to the full API path later on.
+   *
+   * @param item item to compute its resource path.
+   * @returns computed resource path fragment.
+   */
+  private _getResourcePath(item: AstralItem): string {
     switch (item.name) {
       case 'polyanet':
         return 'polyanets';
