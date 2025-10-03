@@ -10,24 +10,12 @@ export class AstralRepository {
     this.apiClient = new CrossmintApiClient();
   }
 
-  async setAstralObjects(args: {
-    candidateId: string;
-    goal: Goal;
-  }): Promise<void> {
+  async setAstralObjects(goal: Goal): Promise<void> {
     await Promise.all(
       // TODO: backpressure?
-      args.goal
+      goal
         .filter((item) => item.name !== 'space')
-        .map((item) =>
-          this.setAstralObject({ candidateId: args.candidateId, item }),
-        ),
+        .map((item) => this.apiClient.postAstralObject(item)),
     );
-  }
-
-  private async setAstralObject(args: {
-    candidateId: string;
-    item: AstralItem & Position;
-  }): Promise<void> {
-    return this.apiClient.postAstralObject(args);
   }
 }
