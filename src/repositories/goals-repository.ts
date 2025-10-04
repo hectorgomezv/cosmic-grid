@@ -23,7 +23,7 @@ export class GoalsRepository {
   async getGoal(): Promise<Goal> {
     const res = await this.apiClient.getGoal();
     const goal = this._parseGoalResponse(GoalResponseSchema.parse(res));
-    logger.info(`Fetched goal with ${goal.length} items`);
+    logger.info(`[GoalsRepository] Fetched goal with ${goal.length} items`);
     return goal;
   }
 
