@@ -22,6 +22,20 @@ export class CrossmintApiClient {
     }
   }
 
+  async getCurrentState(): Promise<unknown> {
+    try {
+      const url = `${this.apiConfiguration.url}/map/${this.candidateId}`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`GET ${url} failed (${res.status} ${res.statusText})`);
+      }
+      return res.json();
+    } catch (err) {
+      logger.error(`[CrossmintApiClient] Error getting current state: ${err}`);
+      throw err;
+    }
+  }
+
   async postAstralObject(item: AstralItem & Position): Promise<void> {
     const url = `${this.apiConfiguration.url}/${this._getResourcePath(item)}`;
     const { name, ...itemFields } = item;

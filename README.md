@@ -2,6 +2,9 @@
 
 A Node.js / TypeScript service that fetches goal maps and draws its astral objects, using a Crossmint API.
 
+The service parses both the goal map and the current state map, and solves conflicts (differences) between them.
+As some inconsistencies exist in the API, several runs might be needed to reach the goal state.
+
 ## Architecture
 
 The service is small and simple, but it does validate data correctness (via the `zod` library) and follows clean architecture patterns:

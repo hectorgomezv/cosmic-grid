@@ -1,17 +1,17 @@
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { CrossmintApiClient } from '../clients/crossmint-api.client.js';
-import { GoalsRepository } from './goals-repository.js';
+import { StateRepository } from './state-repository.js';
 
-describe('GoalsRepository', () => {
+describe('StateRepository', () => {
   vi.mock('../clients/crossmint-api.client.js');
-  const apiMock = { getGoal: vi.fn() };
+  const apiMock = { getGoalState: vi.fn() };
 
   beforeEach(() => {
     vi.clearAllMocks();
     (CrossmintApiClient as unknown as Mock).mockImplementation(() => apiMock);
   });
 
-  it('should call getGoal and parse the response correctly', async () => {
+  it('should call getGoalState and parse the response correctly', async () => {
     const apiResponse = {
       goal: [
         ['SPACE', 'SPACE', 'POLYANET', 'RIGHT_COMETH', 'SPACE'],
@@ -19,12 +19,12 @@ describe('GoalsRepository', () => {
         ['UP_COMETH', 'WHITE_SOLOON', 'LEFT_COMETH', 'PURPLE_SOLOON', 'SPACE'],
       ],
     };
-    apiMock.getGoal.mockResolvedValueOnce(apiResponse);
-    const repository = new GoalsRepository();
+    apiMock.getGoalState.mockResolvedValueOnce(apiResponse);
+    const repository = new StateRepository();
 
-    const goal = await repository.getGoal();
+    const goal = await repository.getGoalState();
 
-    expect(apiMock.getGoal).toHaveBeenCalledTimes(1);
+    expect(apiMock.getGoalState).toHaveBeenCalledTimes(1);
     expect(goal).toEqual([
       { name: 'space', row: 0, column: 0 },
       { name: 'space', row: 0, column: 1 },
@@ -45,10 +45,12 @@ describe('GoalsRepository', () => {
   });
 
   it('should throw an error if the API response is invalid', async () => {
-    apiMock.getGoal.mockResolvedValueOnce({ foo: 'bar' });
-    const repository = new GoalsRepository();
+    apiMock.getGoalState.mockResolvedValueOnce({ foo: 'bar' });
+    const repository = new StateRepository();
 
-    await expect(repository.getGoal()).rejects.toThrow();
-    expect(apiMock.getGoal).toHaveBeenCalledTimes(1);
+    await expect(repository.getGoalState()).rejects.toThrow();
+    expect(apiMock.getGoalState).toHaveBeenCalledTimes(1);
   });
+
+  // TODO: test CurrentState methods as well.
 });
