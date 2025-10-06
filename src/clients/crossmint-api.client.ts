@@ -8,7 +8,7 @@ export class CrossmintApiClient {
   private readonly apiConfiguration = configuration.api;
   private readonly candidateId = configuration.general.candidateId;
 
-  async getGoal(): Promise<unknown> {
+  async getGoalState(): Promise<unknown> {
     try {
       const url = `${this.apiConfiguration.url}/map/${this.candidateId}/goal`;
       const res = await fetch(url);
@@ -18,6 +18,20 @@ export class CrossmintApiClient {
       return res.json();
     } catch (err) {
       logger.error(`[CrossmintApiClient] Error getting goal: ${err}`);
+      throw err;
+    }
+  }
+
+  async getCurrentState(): Promise<unknown> {
+    try {
+      const url = `${this.apiConfiguration.url}/map/${this.candidateId}`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`GET ${url} failed (${res.status} ${res.statusText})`);
+      }
+      return res.json();
+    } catch (err) {
+      logger.error(`[CrossmintApiClient] Error getting current state: ${err}`);
       throw err;
     }
   }

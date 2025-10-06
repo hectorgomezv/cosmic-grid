@@ -1,7 +1,7 @@
 import { CrossmintApiClient } from '../clients/crossmint-api.client.js';
 import { logger } from '../common/logger.js';
 import { configuration } from '../config/configuration.js';
-import type { Goal } from '../entities/goal.js';
+import type { State } from '../entities/state.js';
 
 export class AstralRepository {
   private readonly apiClient: CrossmintApiClient;
@@ -13,17 +13,16 @@ export class AstralRepository {
   }
 
   /**
-   * Draws a goal map of astral objects.
+   * Places astral objects present in the diff {@link State}.
    *
    * Limits concurrency by sending parallel calls to the HTTP client
    * in chunks of size {@link maxConcurrency}.
    *
-   * @param goal array of positions and astral items to draw
+   * @param diff array of positions and astral items to draw
    */
-  async draw(goal: Goal): Promise<void> {
-    const astralObjects = goal.filter((item) => item.name !== 'space');
-    for (let i = 0; i < astralObjects.length; i += this.maxConcurrency) {
-      const chunk = astralObjects.slice(i, i + this.maxConcurrency);
+  async placeAstralObjects(diff: State): Promise<void> {
+    for (let i = 0; i < diff.length; i += this.maxConcurrency) {
+      const chunk = diff.slice(i, i + this.maxConcurrency);
       await Promise.all(
         chunk.map((astralObject) => {
           const { name, row, column } = astralObject;

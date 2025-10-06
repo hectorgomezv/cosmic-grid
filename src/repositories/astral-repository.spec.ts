@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
-import type { Goal } from '../entities/goal.js';
-import { Cometh, Polyanet, Soloon, Space } from '../entities/astral-item.js';
-import { AstralRepository } from './astral-repository.js';
 import { CrossmintApiClient } from '../clients/crossmint-api.client.js';
+import { Cometh, Polyanet, Soloon, Space } from '../entities/astral-item.js';
+import type { State } from '../entities/state.js';
+import { AstralRepository } from './astral-repository.js';
 
 describe('AstralRepository', () => {
   vi.mock('../clients/crossmint-api.client.js');
@@ -13,17 +13,15 @@ describe('AstralRepository', () => {
     (CrossmintApiClient as unknown as Mock).mockImplementation(() => apiMock);
   });
 
-  it('should call postAstralObject for each non-space item', async () => {
-    const goal: Goal = [
+  it('should call postAstralObject for each element in the diff', async () => {
+    const diff: State = [
       { ...new Polyanet(), row: 0, column: 0 },
-      { ...new Space(), row: 1, column: 1 },
       { ...new Soloon('blue'), row: 2, column: 3 },
       { ...new Cometh('up'), row: 4, column: 3 },
-      { ...new Space(), row: 5, column: 4 },
     ];
     const repository = new AstralRepository();
 
-    await repository.draw(goal);
+    await repository.placeAstralObjects(diff);
 
     expect(apiMock.postAstralObject).toHaveBeenCalledTimes(3);
     expect(apiMock.postAstralObject).toHaveBeenNthCalledWith(1, {
@@ -47,11 +45,13 @@ describe('AstralRepository', () => {
 
   it('should propagate errors from CrossmintApiClient.postAstralObject', async () => {
     (CrossmintApiClient as unknown as Mock).mockImplementation(() => apiMock);
-    const goal: Goal = [{ ...new Polyanet(), row: 0, column: 0 }];
+    const diff: State = [{ ...new Polyanet(), row: 0, column: 0 }];
     apiMock.postAstralObject.mockRejectedValueOnce(new Error('API error'));
     const repository = new AstralRepository();
 
-    await expect(repository.draw(goal)).rejects.toThrow('API error');
+    await expect(repository.placeAstralObjects(diff)).rejects.toThrow(
+      'API error',
+    );
     expect(apiMock.postAstralObject).toHaveBeenCalledTimes(1);
     expect(apiMock.postAstralObject).toHaveBeenCalledWith({
       name: 'polyanet',
