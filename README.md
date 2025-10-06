@@ -17,7 +17,7 @@ The service is small and simple, but it does validate data correctness (via the 
 
 ## API Integration
 
-As the target Crossmint API is rate-limited, the service is provided with an exponential backoff retry mechanism. Also, an extended (configurable) timeout is provided.
+As the target Crossmint API is rate-limited, the service is provided with an exponential backoff retry mechanism.
 
 ## Getting Started
 

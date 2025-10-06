@@ -5,6 +5,8 @@ import { AstralRepository } from '../repositories/astral-repository.js';
 import { StateRepository } from '../repositories/state-repository.js';
 
 export class AstralService {
+  public static readonly DELAY_MS = 10_000;
+  private static readonly MAX_RUNS = 10;
   private readonly stateRepository: StateRepository;
   private readonly astralRepository: AstralRepository;
 
@@ -26,17 +28,23 @@ export class AstralService {
   async draw(): Promise<void> {
     let run: number = 1;
     let diff: State = [];
-    // TODO: check algorithm
-    while (run === 1 || diff.length > 0) {
+
+    while (run === 1 || (diff.length > 0 && run <= AstralService.MAX_RUNS)) {
       logger.info(`[AstralRepository] Draw #${run}`);
       run++;
       const goal = await this.stateRepository.getGoalState();
       const current = await this.stateRepository.getCurrentState();
-      const diff = _.differenceWith(goal, current, _.isEqual);
+      diff = _.differenceWith(goal, current, _.isEqual);
+      logger.info(`[AstralRepository] ${diff.length} differences found`);
       if (diff.length > 0) {
         await this.astralRepository.placeAstralObjects(diff);
-        await new Promise((_) => setTimeout(_, 10_000));
+        await new Promise((_) => setTimeout(_, AstralService.DELAY_MS));
       }
     }
+
+    if (diff.length > 0) {
+      throw new Error(`Max runs (${AstralService.MAX_RUNS}) reached`);
+    }
+    logger.info('[AstralRepository] Goal State reached');
   }
 }

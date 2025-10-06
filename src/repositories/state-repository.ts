@@ -1,15 +1,13 @@
 import { CrossmintApiClient } from '../clients/crossmint-api.client.js';
 import { logger } from '../common/logger.js';
 import {
-  GoalStateResponseSchema,
-  type GoalStateResponse,
-} from '../entities/goal.js';
-import {
   CurrentStateResponseSchema,
-  type State,
+  GoalStateResponseSchema,
   type CurrentStateResponse,
+  type GoalStateResponse,
+  type State,
 } from '../entities/state.js';
-import { AstralMapper } from '../mappers/astral-mapper.js';
+import { StateMapper } from '../mappers/state-item-mapper.js';
 
 export class StateRepository {
   private readonly apiClient: CrossmintApiClient;
@@ -25,29 +23,10 @@ export class StateRepository {
    * astral object data and its position (row + column).
    */
   async getGoalState(): Promise<State> {
-    const res = await this.apiClient.getGoal();
+    const res = await this.apiClient.getGoalState();
     const goal = this._parseGoalResponse(GoalStateResponseSchema.parse(res));
     logger.info(`[GoalsRepository] Fetched goal with ${goal.length} items`);
     return goal;
-  }
-
-  /**
-   * Parses an unchecked Goal response payload coming from the API client.
-   *
-   * @param goalResponse unchecked payload representing a Goal map.
-   * @returns checked (validated) Goal map: a flattened representation
-   * of a 2D array, holding both the astral object data and its
-   * position (row + column).
-   */
-  private _parseGoalResponse(goalResponse: GoalStateResponse): State {
-    const { goal } = goalResponse;
-    const result: State = [];
-    for (const [row, columnItems] of goal.entries()) {
-      for (const [column, item] of columnItems.entries()) {
-        result.push({ ...AstralMapper.mapFromGoal(item), row, column });
-      }
-    }
-    return result;
   }
 
   /**
@@ -66,6 +45,25 @@ export class StateRepository {
   }
 
   /**
+   * Parses an unchecked Goal response payload coming from the API client.
+   *
+   * @param goalResponse unchecked payload representing a Goal map.
+   * @returns checked (validated) Goal map: a flattened representation
+   * of a 2D array, holding both the astral object data and its
+   * position (row + column).
+   */
+  private _parseGoalResponse(goalResponse: GoalStateResponse): State {
+    const { goal } = goalResponse;
+    const result: State = [];
+    for (const [row, columnItems] of goal.entries()) {
+      for (const [column, item] of columnItems.entries()) {
+        result.push({ ...StateMapper.mapFromGoalState(item), row, column });
+      }
+    }
+    return result;
+  }
+
+  /**
    * Parses an unchecked State response payload coming from the API client.
    *
    * @param stateResponse unchecked payload representing a State map.
@@ -80,7 +78,7 @@ export class StateRepository {
     const result: State = [];
     for (const [row, columnItems] of content.entries()) {
       for (const [column, item] of columnItems.entries()) {
-        result.push({ ...AstralMapper.mapFromCurrentState(item), row, column });
+        result.push({ ...StateMapper.mapFromCurrentState(item), row, column });
       }
     }
     return result;

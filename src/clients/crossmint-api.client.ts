@@ -8,7 +8,7 @@ export class CrossmintApiClient {
   private readonly apiConfiguration = configuration.api;
   private readonly candidateId = configuration.general.candidateId;
 
-  async getGoal(): Promise<unknown> {
+  async getGoalState(): Promise<unknown> {
     try {
       const url = `${this.apiConfiguration.url}/map/${this.candidateId}/goal`;
       const res = await fetch(url);

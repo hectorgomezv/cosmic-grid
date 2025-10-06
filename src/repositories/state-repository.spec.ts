@@ -4,7 +4,7 @@ import { StateRepository } from './state-repository.js';
 
 describe('StateRepository', () => {
   vi.mock('../clients/crossmint-api.client.js');
-  const apiMock = { getGoalState: vi.fn() };
+  const apiMock = { getGoalState: vi.fn(), getCurrentState: vi.fn() };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -52,5 +52,35 @@ describe('StateRepository', () => {
     expect(apiMock.getGoalState).toHaveBeenCalledTimes(1);
   });
 
-  // TODO: test CurrentState methods as well.
+  it('should call getCurrentState and parse the response correctly', async () => {
+    const apiResponse = {
+      map: {
+        content: [
+          [null, { type: 1, color: 'blue' }, null, null],
+          [null, { type: 0 }, { type: 1, color: 'red' }, null],
+          [{ type: 2, direction: 'up' }, null, null, null],
+        ],
+      },
+    };
+    apiMock.getCurrentState.mockResolvedValueOnce(apiResponse);
+    const repository = new StateRepository();
+
+    const currentState = await repository.getCurrentState();
+
+    expect(apiMock.getCurrentState).toHaveBeenCalledTimes(1);
+    expect(currentState).toEqual([
+      { name: 'space', row: 0, column: 0 },
+      { name: 'soloon', color: 'blue', row: 0, column: 1 },
+      { name: 'space', row: 0, column: 2 },
+      { name: 'space', row: 0, column: 3 },
+      { name: 'space', row: 1, column: 0 },
+      { name: 'polyanet', row: 1, column: 1 },
+      { name: 'soloon', color: 'red', row: 1, column: 2 },
+      { name: 'space', row: 1, column: 3 },
+      { name: 'cometh', direction: 'up', row: 2, column: 0 },
+      { name: 'space', row: 2, column: 1 },
+      { name: 'space', row: 2, column: 2 },
+      { name: 'space', row: 2, column: 3 },
+    ]);
+  });
 });

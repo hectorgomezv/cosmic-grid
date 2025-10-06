@@ -34,6 +34,7 @@ export const CurrentStateResponseSchema = z.object({
   }),
 });
 
+export type CurrentStateItem = z.infer<typeof CurrentStateItemSchema>;
 export type GoalStateResponse = z.infer<typeof GoalStateResponseSchema>;
 export type CurrentStateResponse = z.infer<typeof CurrentStateResponseSchema>;
 export type State = Array<AstralItem & Position>;
