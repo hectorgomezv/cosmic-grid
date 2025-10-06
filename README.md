@@ -39,7 +39,7 @@ npm i
 cp example.env .env
 ```
 
-Edit `.env` and set your values:
+3. Edit `.env` and set your values:
 
 ```env
 CANDIDATE_ID=your-candidate-id-here
